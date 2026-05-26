@@ -1,0 +1,78 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "northwind.app",
+    "type": "application",
+    "title": "Northwind CAP Dashboard",
+    "description": "Fiori Dashboard consuming the SAP CAP Northwind service",
+    "dataSources": {
+      "mainService": {
+        "uri": "/northwind/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "northwind.app.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "app"
+    },
+    "dependencies": {
+      "minUI5Version": "1.120.0",
+      "libs": {
+        "sap.ui.core": {},
+        "sap.m": {},
+        "sap.f": {}
+      }
+    },
+    "models": {
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "synchronizationMode": "None",
+          "operationMode": "Server",
+          "autoExpandSelect": true
+        }
+      }
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "northwind.app.view",
+        "controlAggregation": "pages",
+        "controlId": "appContainer"
+      },
+      "routes": [
+        {
+          "name": "RouteMain",
+          "pattern": "",
+          "target": [
+            "TargetMain"
+          ]
+        }
+      ],
+      "targets": {
+        "TargetMain": {
+          "viewName": "Main",
+          "viewId": "Main"
+        }
+      }
+    }
+  }
+}

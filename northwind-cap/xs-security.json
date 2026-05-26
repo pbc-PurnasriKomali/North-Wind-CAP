@@ -1,0 +1,51 @@
+{
+  "xsappname": "northwind-cap",
+  "tenant-mode": "dedicated",
+  "description": "XSUAA security descriptor for the Northwind CAP service",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.northwind.view",
+      "description": "Grants read access to all NorthwindService entity sets"
+    },
+    {
+      "name": "$XSAPPNAME.northwind.admin",
+      "description": "Grants full read access including $metadata and diagnostics endpoint"
+    }
+  ],
+  "attributes": [],
+  "role-templates": [
+    {
+      "name": "NorthwindViewer",
+      "description": "Read all exposed entities — default user role",
+      "scope-references": [
+        "$XSAPPNAME.northwind.view"
+      ],
+      "attribute-references": []
+    },
+    {
+      "name": "NorthwindAdmin",
+      "description": "Read + access to $metadata and diagnostics endpoint",
+      "scope-references": [
+        "$XSAPPNAME.northwind.view",
+        "$XSAPPNAME.northwind.admin"
+      ],
+      "attribute-references": []
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "Northwind_Viewer",
+      "description": "Northwind read-only viewer",
+      "role-template-references": [
+        "$XSAPPNAME.NorthwindViewer"
+      ]
+    },
+    {
+      "name": "Northwind_Admin",
+      "description": "Northwind admin access",
+      "role-template-references": [
+        "$XSAPPNAME.NorthwindAdmin"
+      ]
+    }
+  ]
+}

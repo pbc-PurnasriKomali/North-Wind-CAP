@@ -1,0 +1,2 @@
+# db — empty in v1 (no local persistence layer per spec §1.2)
+# Phase 2: add caching or local entities here if required.

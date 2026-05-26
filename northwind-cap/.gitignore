@@ -1,0 +1,9 @@
+node_modules/
+.env
+default-env.json
+default-services.json
+mta_archives/
+gen/
+*.mtar
+*.log
+.DS_Store

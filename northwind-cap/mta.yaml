@@ -1,0 +1,85 @@
+_schema-version: '3.1'
+ID: northwind-cap
+version: 1.0.0
+description: SAP CAP Node.js facade over the Northwind OData v4 service
+
+parameters:
+  enable-parallel-deployments: true
+
+build-parameters:
+  before-all:
+    - builder: custom
+      commands:
+        - npm ci --production
+
+modules:
+
+  # ── northwind-srv — CAP Node.js service (main deployable) ────────────────
+  - name: northwind-srv
+    type: nodejs
+    path: .
+    parameters:
+      buildpack: nodejs_buildpack
+      memory: 512M
+      disk-quota: 512M
+    build-parameters:
+      builder: npm
+      ignore:
+        - .env
+        - default-env.json
+        - node_modules/
+    properties:
+      NODE_ENV: production
+      CDS_FEATURES_ASSERT_INTEGRITY: false
+      # Override via BTP Destination service in production (see resources below)
+      NORTHWIND_URL: https://services.odata.org/V4/Northwind/Northwind.svc
+    requires:
+      - name: northwind-xsuaa
+      - name: northwind-destination
+    provides:
+      - name: srv-api
+        properties:
+          srv-url: ${default-url}
+
+  # ── northwind-app-deployer — UI5 static content deployer (optional / Phase 2)
+  - name: northwind-app-deployer
+    type: com.sap.application.content
+    path: app
+    requires:
+      - name: northwind-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - artifacts:
+            - '*.zip'
+          name: northwind-app
+          target-path: resources/
+
+resources:
+
+  # ── XSUAA — JWT bearer authentication (spec §7) ───────────────────────────
+  - name: northwind-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+      config:
+        xsappname: northwind-cap-${org}-${space}
+        tenant-mode: dedicated
+
+  # ── Destination service — optional, for managing Northwind URL centrally ──
+  - name: northwind-destination
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: destination
+      service-plan: lite
+
+  # ── HTML5 Apps Repository — only needed if UI5 app is deployed alongside ──
+  - name: northwind-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host

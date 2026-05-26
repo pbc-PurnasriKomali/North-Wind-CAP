@@ -1,0 +1,261 @@
+<mvc:View
+    controllerName="northwind.app.controller.Main"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:core="sap.ui.core">
+    <Page id="mainPage" title="Northwind OData v4 Facade Dashboard">
+        <headerContent>
+            <Button icon="sap-icon://refresh" press="onRefresh" tooltip="Refresh Data"/>
+        </headerContent>
+        <content>
+            <IconTabBar id="iconTabBar" expandable="false" class="sapUiResponsiveContentPadding">
+                <items>
+                    <!-- Products Tab -->
+                    <IconTabFilter icon="sap-icon://product" text="Products" key="products">
+                        <Table id="productsTable"
+                            items="{path: '/Products'}"
+                            growing="true"
+                            growingThreshold="25"
+                            growingScrollToLoad="true">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <Title text="Products Catalog"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField width="30%" search="onSearchProducts" placeholder="Filter by Name..."/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="5em" hAlign="End"><Text text="ID"/></Column>
+                                <Column><Text text="Product Name"/></Column>
+                                <Column hAlign="End"><Text text="Unit Price"/></Column>
+                                <Column hAlign="End"><Text text="Units in Stock"/></Column>
+                                <Column hAlign="Center"><Text text="Stock Status"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{ProductID}"/>
+                                        <Text text="{ProductName}"/>
+                                        <Text text="{
+                                            parts: [{path: 'UnitPrice'}],
+                                            type: 'sap.ui.model.type.Float',
+                                            formatOptions: {
+                                                minFractionDigits: 2,
+                                                maxFractionDigits: 2
+                                            }
+                                        }"/>
+                                        <Text text="{UnitsInStock}"/>
+                                        <ObjectStatus
+                                            text="{StockStatus}"
+                                            state="{= ${StockStatus} === 'In Stock' ? 'Success' : ${StockStatus} === 'Low Stock' ? 'Warning' : 'Error' }"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                    <!-- Orders Tab -->
+                    <IconTabFilter icon="sap-icon://sales-order" text="Orders" key="orders">
+                        <Table id="ordersTable"
+                            items="{path: '/Orders'}"
+                            growing="true"
+                            growingThreshold="25"
+                            growingScrollToLoad="true">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <Title text="Customer Orders"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField width="30%" search="onSearchOrders" placeholder="Filter by Customer ID..."/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="6em"><Text text="Order ID"/></Column>
+                                <Column width="8em"><Text text="Customer"/></Column>
+                                <Column><Text text="Order Date"/></Column>
+                                <Column><Text text="Required Date"/></Column>
+                                <Column><Text text="Shipped Date"/></Column>
+                                <Column hAlign="Center"><Text text="Order Status"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{OrderID}"/>
+                                        <Text text="{CustomerID}"/>
+                                        <Text text="{OrderDate}"/>
+                                        <Text text="{RequiredDate}"/>
+                                        <Text text="{ShippedDate}"/>
+                                        <ObjectStatus
+                                            text="{OrderStatus}"
+                                            state="{= ${OrderStatus} === 'Shipped' ? 'Success' : ${OrderStatus} === 'Overdue' ? 'Error' : 'None' }"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                    <!-- Order Details Tab -->
+                    <IconTabFilter icon="sap-icon://sales-order-item" text="Order Details" key="orderDetails">
+                        <Table id="orderDetailsTable"
+                            items="{path: '/Order_Details'}"
+                            growing="true"
+                            growingThreshold="25"
+                            growingScrollToLoad="true">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <Title text="Order Line Items"/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="6em"><Text text="Order ID"/></Column>
+                                <Column width="6em"><Text text="Product ID"/></Column>
+                                <Column hAlign="End"><Text text="Unit Price"/></Column>
+                                <Column hAlign="End"><Text text="Quantity"/></Column>
+                                <Column hAlign="End"><Text text="Discount"/></Column>
+                                <Column hAlign="End"><Text text="Line Total"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{OrderID}"/>
+                                        <Text text="{ProductID}"/>
+                                        <Text text="{
+                                            parts: [{path: 'UnitPrice'}],
+                                            type: 'sap.ui.model.type.Float',
+                                            formatOptions: {
+                                                minFractionDigits: 2,
+                                                maxFractionDigits: 2
+                                            }
+                                        }"/>
+                                        <Text text="{Quantity}"/>
+                                        <Text text="{
+                                            parts: [{path: 'Discount'}],
+                                            type: 'sap.ui.model.type.Float',
+                                            formatOptions: {
+                                                minFractionDigits: 2,
+                                                maxFractionDigits: 4
+                                            }
+                                        }"/>
+                                        <ObjectNumber
+                                            number="{
+                                                parts: [{path: 'LineTotal'}],
+                                                type: 'sap.ui.model.type.Float',
+                                                formatOptions: {
+                                                    minFractionDigits: 2,
+                                                    maxFractionDigits: 2
+                                                }
+                                            }"
+                                            state="Information"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+                    <!-- Categories Tab -->
+                    <IconTabFilter icon="sap-icon://tag" text="Categories" key="categories">
+                        <Table id="categoriesTable"
+                            items="{path: '/Categories'}"
+                            growing="true"
+                            growingThreshold="25"
+                            growingScrollToLoad="true">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <Title text="Product Categories"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField width="30%" search="onSearchCategories" placeholder="Filter by Name..."/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="5em" hAlign="End"><Text text="ID"/></Column>
+                                <Column><Text text="Category Name"/></Column>
+                                <Column><Text text="Description"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{CategoryID}"/>
+                                        <Text text="{CategoryName}"/>
+                                        <Text text="{Description}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                    <!-- Customers Tab -->
+                    <IconTabFilter icon="sap-icon://customer" text="Customers" key="customers">
+                        <Table id="customersTable"
+                            items="{path: '/Customers'}"
+                            growing="true"
+                            growingThreshold="25"
+                            growingScrollToLoad="true">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <Title text="Customers"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField width="30%" search="onSearchCustomers" placeholder="Filter by Company..."/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="7em"><Text text="Customer ID"/></Column>
+                                <Column><Text text="Company Name"/></Column>
+                                <Column><Text text="Contact Name"/></Column>
+                                <Column><Text text="Country"/></Column>
+                                <Column><Text text="City"/></Column>
+                                <Column><Text text="Phone"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{CustomerID}"/>
+                                        <Text text="{CompanyName}"/>
+                                        <Text text="{ContactName}"/>
+                                        <Text text="{Country}"/>
+                                        <Text text="{City}"/>
+                                        <Text text="{Phone}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                    <!-- Suppliers Tab -->
+                    <IconTabFilter icon="sap-icon://supplier" text="Suppliers" key="suppliers">
+                        <Table id="suppliersTable"
+                            items="{path: '/Suppliers'}"
+                            growing="true"
+                            growingThreshold="25"
+                            growingScrollToLoad="true">
+                            <headerToolbar>
+                                <OverflowToolbar>
+                                    <Title text="Suppliers"/>
+                                    <ToolbarSpacer/>
+                                    <SearchField width="30%" search="onSearchSuppliers" placeholder="Filter by Company..."/>
+                                </OverflowToolbar>
+                            </headerToolbar>
+                            <columns>
+                                <Column width="5em" hAlign="End"><Text text="ID"/></Column>
+                                <Column><Text text="Company Name"/></Column>
+                                <Column><Text text="Contact Name"/></Column>
+                                <Column><Text text="Country"/></Column>
+                                <Column><Text text="Phone"/></Column>
+                            </columns>
+                            <items>
+                                <ColumnListItem>
+                                    <cells>
+                                        <Text text="{SupplierID}"/>
+                                        <Text text="{CompanyName}"/>
+                                        <Text text="{ContactName}"/>
+                                        <Text text="{Country}"/>
+                                        <Text text="{Phone}"/>
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </IconTabFilter>
+
+                </items>
+            </IconTabBar>
+        </content>
+    </Page>
+</mvc:View>
