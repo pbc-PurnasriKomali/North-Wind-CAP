@@ -6,71 +6,42 @@ sap.ui.define([
     "use strict";
 
     return Controller.extend("northwind.app.controller.Main", {
-        onInit: function () {
-            // Main initialization logic
-        },
+        onInit: function () {},
 
         onRefresh: function () {
             var oModel = this.getView().getModel();
-            if (oModel) {
-                oModel.refresh();
-            }
+            if (oModel) oModel.refresh();
         },
 
         onSearchProducts: function (oEvent) {
-            var sQuery = oEvent.getParameter("query") || oEvent.getParameter("newValue");
-            var oTable = this.byId("productsTable");
-            var oBinding = oTable.getBinding("items");
-            
-            if (oBinding) {
-                if (sQuery && sQuery.length > 0) {
-                    var oFilter = new Filter("ProductName", FilterOperator.Contains, sQuery);
-                    oBinding.filter([oFilter]);
-                } else {
-                    oBinding.filter([]);
-                }
-            }
+            this._filterTable(oEvent, "productsTable", "ProductName");
         },
 
         onSearchOrders: function (oEvent) {
             var sQuery = oEvent.getParameter("query") || oEvent.getParameter("newValue");
-            var oTable = this.byId("ordersTable");
-            var oBinding = oTable.getBinding("items");
-            
+            var oBinding = this.byId("ordersTable").getBinding("items");
             if (oBinding) {
-                if (sQuery && sQuery.length > 0) {
-                    var oFilter = new Filter("CustomerID", FilterOperator.Contains, sQuery.toUpperCase());
-                    oBinding.filter([oFilter]);
-                } else {
-                    oBinding.filter([]);
-                }
+                oBinding.filter(sQuery ? [new Filter("CustomerID", FilterOperator.Contains, sQuery.toUpperCase())] : []);
             }
         },
 
         onSearchCategories: function (oEvent) {
-            var sQuery = oEvent.getParameter("query") || oEvent.getParameter("newValue");
-            var oTable = this.byId("categoriesTable");
-            var oBinding = oTable.getBinding("items");
-            if (oBinding) {
-                oBinding.filter(sQuery ? [new Filter("CategoryName", FilterOperator.Contains, sQuery)] : []);
-            }
+            this._filterTable(oEvent, "categoriesTable", "CategoryName");
         },
 
         onSearchCustomers: function (oEvent) {
-            var sQuery = oEvent.getParameter("query") || oEvent.getParameter("newValue");
-            var oTable = this.byId("customersTable");
-            var oBinding = oTable.getBinding("items");
-            if (oBinding) {
-                oBinding.filter(sQuery ? [new Filter("CompanyName", FilterOperator.Contains, sQuery)] : []);
-            }
+            this._filterTable(oEvent, "customersTable", "CompanyName");
         },
 
         onSearchSuppliers: function (oEvent) {
+            this._filterTable(oEvent, "suppliersTable", "CompanyName");
+        },
+
+        _filterTable: function (oEvent, tableId, field) {
             var sQuery = oEvent.getParameter("query") || oEvent.getParameter("newValue");
-            var oTable = this.byId("suppliersTable");
-            var oBinding = oTable.getBinding("items");
+            var oBinding = this.byId(tableId).getBinding("items");
             if (oBinding) {
-                oBinding.filter(sQuery ? [new Filter("CompanyName", FilterOperator.Contains, sQuery)] : []);
+                oBinding.filter(sQuery ? [new Filter(field, FilterOperator.Contains, sQuery)] : []);
             }
         }
     });

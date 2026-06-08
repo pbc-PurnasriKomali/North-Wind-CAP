@@ -4,8 +4,6 @@ sap.ui.define([
     "use strict";
 
     return BaseController.extend("northwind.app.controller.App", {
-        onInit: function () {
-            // Root init logic if any
-        }
+        onInit: function () {}
     });
 });
